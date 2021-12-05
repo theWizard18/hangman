@@ -1,8 +1,9 @@
-use std::collections::HashSet;
+use std::io;
 use std::fs;
+use std::ops::Sub;
+use std::collections::HashSet;
 use rand::seq::SliceRandom;
 use rand::thread_rng;
-use std::io;
 
 fn get_word(file_path: &str) -> Option<String> {
     let content = match fs::read_to_string(file_path) {
@@ -24,7 +25,7 @@ fn get_sprites() -> [String; 7] {
         "_____\n|   |\n|   O\n|  /|\\\n|  /\n|\n|".to_string(),
         "_____\n|   |\n|   O\n|  /|\\\n|\n|\n|".to_string(),
         "_____\n|   |\n|   O\n|  /|\n|\n|\n|".to_string(),
-        "_____\n|   |\n|   O\n|  /\n|\n|\n|".to_string(),
+        "_____\n|   |\n|   O\n|   |\n|\n|\n|".to_string(),
         "_____\n|   |\n|   O\n|\n|\n|\n|".to_string(),
         "_____\n|   |\n|\n|\n|\n|\n|".to_string()
     ]
@@ -64,14 +65,17 @@ fn prompt(guesses: &mut Vec<char>) -> char {
     }
 }
 
-fn process_guessing(guess :&char, tries :&mut usize, secret_letters :&mut HashSet<char>) {
+fn process_guessing(guess :&char, tries :usize, secret_letters :&mut HashSet<char>) -> usize {
     match secret_letters.remove(guess) {
-        true => println!("{} is a secret word", guess),
+        true => {
+            println!("{} is a secret word", guess);
+            tries
+        },
         false => {
             println!("{} is not a secret word", guess);
-            tries -= 1;
-        }
-    };
+            tries.sub(1)
+        },
+    }
 }
 
 fn game(word: String) {
@@ -85,7 +89,7 @@ fn game(word: String) {
         println!("{}", sprites[tries]);
         println!("    {}", secret_word(&word, &secret_letters));
         guess = prompt(&mut guesses);
-        process_guessing(&guess, &mut tries, &mut secret_letters);
+        tries = process_guessing(&guess, tries, &mut secret_letters);
     };
     if tries == 0 || secret_letters.is_empty() {
         println!("You lost");
