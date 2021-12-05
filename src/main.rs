@@ -14,9 +14,8 @@ fn get_word(file_path: &str) -> Option<String> {
     for v in content.lines() {
         words.push(String::from(v));
     };
-    words.shuffle(&mut thread_rng());
-    let word = words.pop();
-    word
+    let word = words.choose(&mut thread_rng());
+    word.cloned()
 }
 
 fn get_sprites() -> [String; 7] {
