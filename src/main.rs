@@ -52,27 +52,35 @@ fn secret_word(word :&String, secret_letters :&HashSet<char>) -> String {
 }
 
 fn prompt(guesses: &mut Vec<char>) -> char {
-    let mut buffer = String::new();
-    let stdin = io::stdin();
-    print!("enter a guess: ");
-    match stdin.read_line(&mut buffer) {
-        Ok(_i) => {
-            let input = buffer.remove(0);
-            guesses.push(input.clone());
-            input
-        },
-        Err(_) => ' ',
-    }
+    loop {
+        println!("enter a guess: ");
+        let mut buffer = String::new();
+        let stdin = io::stdin();
+        match stdin.read_line(&mut buffer) {
+            Ok(i) => match i {
+                2 => {
+                    let input = buffer.remove(0);
+                    guesses.push(input.clone());
+                    return input;
+                },
+                _ => {
+                    println!("input is invalid");
+                    continue;
+                },
+            },
+            Err(_) => ' ',
+        };
+    };
 }
 
 fn process_guessing(guess :&char, tries :usize, secret_letters :&mut HashSet<char>) -> usize {
     match secret_letters.remove(guess) {
         true => {
-            println!("{} is a secret word", guess);
+            println!("{} is a secret letter", guess);
             tries
         },
         false => {
-            println!("{} is not a secret word", guess);
+            println!("{} is not a secret letter", guess);
             tries.sub(1)
         },
     }
@@ -91,10 +99,14 @@ fn game(word: String) {
         guess = prompt(&mut guesses);
         tries = process_guessing(&guess, tries, &mut secret_letters);
     };
-    if tries == 0 || secret_letters.is_empty() {
-        println!("You lost");
+    println!("Guesses: {:?}", guesses);
+    println!("{}", sprites[tries]);
+    println!("    {}", secret_word(&word, &secret_letters));
+
+    if tries == 0 && !secret_letters.is_empty() {
+        println!("You lost, the word was {}", word);
     } else {
-        println!("You Won");
+        println!("You Won, the word was {}", word);
     };
 }
 
