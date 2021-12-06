@@ -51,12 +51,12 @@ fn secret_word(word :&String, secret_letters :&HashSet<char>) -> String {
 }
 
 fn prompt(guesses: &mut Vec<char>) -> char {
+    let mut buffer = String::new();
+    let stdin = io::stdin();
     loop {
         println!("enter a guess: ");
-        let mut buffer = String::new();
-        let stdin = io::stdin();
         match stdin.read_line(&mut buffer) {
-            Ok(i) => match i {
+            Ok(_i) => {
                 let mut input = buffer.remove(0);
                 if input.is_ascii_alphabetic() {
                     input.make_ascii_lowercase();
@@ -67,12 +67,11 @@ fn prompt(guesses: &mut Vec<char>) -> char {
                     continue;
                 };
             },
-            _ => {
+            Err(_) => {
                 println!("input is invalid");
                 continue;
             },
         };
-        Err(_) => ' ',
     };
 }
 
