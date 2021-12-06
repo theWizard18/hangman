@@ -57,24 +57,22 @@ fn prompt(guesses: &mut Vec<char>) -> char {
         let stdin = io::stdin();
         match stdin.read_line(&mut buffer) {
             Ok(i) => match i {
-                2 => {
-                    let mut input = buffer.remove(0);
-                    if input.is_ascii_alphabetic() {
-                        input.make_ascii_lowercase();
-                        guesses.push(input.clone());
-                        return input;
-                    } else {
-                        println!("input is invalid");
-                        continue;
-                    }
-                },
-                _ => {
+                let mut input = buffer.remove(0);
+                if input.is_ascii_alphabetic() {
+                    input.make_ascii_lowercase();
+                    guesses.push(input.clone());
+                    return input;
+                } else {
                     println!("input is invalid");
                     continue;
-                },
+                };
             },
-            Err(_) => ' ',
+            _ => {
+                println!("input is invalid");
+                continue;
+            },
         };
+        Err(_) => ' ',
     };
 }
 
